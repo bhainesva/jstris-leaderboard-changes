@@ -52,7 +52,7 @@ const getChangeDescriber = leaderboardSize => details => {
     return `${details.name} fell out of the top ${leaderboardSize}`
   }
   const changeDescriptor = (type === changeType.FALL) ? 'fell' : 'rose';
-  const changeDetails = (type === changeType.FALL) ? '' : ` with a new time of ${details.newGame}`;
+  const changeDetails = (type === changeType.FALL) ? '' : ` with a time of ${details.newGame}`;
   return `${details.name} ${changeDescriptor} from position ${details.oldPos} to position ${details.newPos}${changeDetails}`;
 }
 

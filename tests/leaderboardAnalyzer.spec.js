@@ -114,7 +114,7 @@ describe("describeChange", () => {
     const tests = [
       { // Rise
         details: {name: "Vince_HD", oldPos: 10, oldGame: 20.654, newPos: 1, newGame: 15.654},
-        expected: 'Vince_HD rose from position 10 to position 1 with a new time of 15.654',
+        expected: 'Vince_HD rose from position 10 to position 1 with a time of 15.654',
       },
       { // Fall
         details: {name: "Vince_HD", oldPos: 2, oldGame: 20.654, newPos: 3, newGame: 20.654},

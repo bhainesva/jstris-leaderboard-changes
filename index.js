@@ -4,7 +4,7 @@ import bent from 'bent';
 const getJSON = bent('json');
 
 // What portion of the leaderboard should be checked, 0 < TOP_X <= 500;
-const TOP_X = 100;
+const TOP_X = 500;
 
 // Which leaderboard are we interested in
 const GAME = 1;
