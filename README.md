@@ -34,6 +34,13 @@ and this data returned from the jstris api
 the script will output
 ```
 Bob fell out of the top 4
-Diane rose from position 4 to position 2 with a new time of 7
+Diane rose from position 4 to position 2 with a time of 7
 Fraulein Maria entered the top 4 at position 1 with a time of 6
+```
+
+output running now (11/19/2020) against a snapshot from yesterday is
+```
+kneesocks rose from position 221 to position 161 with a time of 24.826
+NameNoName fell out of the top 500
+Frostfire entered the top 500 at position 446 with a time of 28.366
 ```
