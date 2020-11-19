@@ -1,0 +1,1 @@
+import "./tests/leaderboardAnalyzer.spec.js";

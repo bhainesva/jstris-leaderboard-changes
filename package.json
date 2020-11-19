@@ -1,0 +1,13 @@
+{
+  "name": "jstris",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "license": "MIT",
+  "dependencies": {
+    "bent": "^7.3.12"
+  },
+  "devDependencies": {
+    "highground": "^1.0.9"
+  }
+}
