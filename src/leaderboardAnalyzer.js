@@ -1,11 +1,10 @@
-const getLeaderboardAnalyzer = leaderboardSize => ({
-  compareRankings: getRankingsComparer(leaderboardSize),
-  describeChange: getChangeDescriber(leaderboardSize)
-});
-
-const reportChange = (details) => {
-  // TODO: hit discord API here I guess
-}
+const getLeaderboardAnalyzer = config => {
+  const { top=500 } = config;
+  return {
+    compareRankings: getRankingsComparer(top),
+    describeChanges,
+  }
+};
 
 const changeType = {
   RISE: "rise",
@@ -27,6 +26,11 @@ const getChangeType = details => {
 }
 
 // ---- Internal -------------------------
+const compareType = (a, b) => {
+  const order = [changeType.RISE, changeType.ENTER, changeType.FALL, changeType.EXIT];
+  return order.indexOf(a) - order.indexOf(b);
+}
+
 const getChangeDetails = (oldPlacing, newPlacing) => {
   const old = oldPlacing || {};
   const nu = newPlacing || {};
@@ -44,16 +48,29 @@ const getChangeDetails = (oldPlacing, newPlacing) => {
   }
 }
 
-const getChangeDescriber = leaderboardSize => details => {
+const sortChanges = changes => [...changes].sort((a, b) => {
+  const typeA = getChangeType(a);
+  const typeB = getChangeType(b);
+  if (typeA !== typeB) return compareType(typeA, typeB)
+  if (typeA === compareType.EXIT) return a.oldPos - b.oldPos
+  return a.newPos - b.newPos;
+});
+
+const describeChanges = changes => {
+  const maxNameLength = Math.max(...changes.map(details => details.name.length));
+  const summary = sortChanges(changes)
+    .map(details => describeChange(details, maxNameLength))
+    .join('\n');
+
+  return summary || 'No changes';
+}
+
+const describeChange = (details, pad = 0) => {
   const type = getChangeType(details);
-  if (type === changeType.ENTER) {
-    return `${details.name} entered the top ${leaderboardSize} at position ${details.newPos} with a time of ${details.newGame}`;
-  } else if (type === changeType.EXIT) {
-    return `${details.name} fell out of the top ${leaderboardSize}`
-  }
-  const changeDescriptor = (type === changeType.FALL) ? 'fell' : 'rose';
-  const changeDetails = (type === changeType.FALL) ? '' : ` with a time of ${details.newGame}`;
-  return `${details.name} ${changeDescriptor} from position ${details.oldPos} to position ${details.newPos}${changeDetails}`;
+  const changeDescriptor = (type === changeType.FALL || type === changeType.EXIT) ? '⬇' : '⬆';
+  const extension = (type !== changeType.EXIT) ? ` (${details.newGame})` : ''
+
+  return `${String(details.oldPos || '').padStart(4, ' ')} ${changeDescriptor}${String(details.newPos || '').padStart(4, ' ')} ${details.name.padEnd(pad, ' ')}${extension}`;
 }
 
 const placingByName = (placements) => placements.reduce((acc, curr) => {
@@ -78,7 +95,6 @@ const getRankingsComparer = leaderboardSize => (old, nu) => {
 export {
   getLeaderboardAnalyzer,
   getChangeDetails,
-  reportChange,
   changeType,
   getChangeType,
 }

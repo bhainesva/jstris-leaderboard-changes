@@ -34,7 +34,7 @@ describe("compareRankings", () => {
       {name: "F", newPos: 1, newGame: 6, newId: 11},
     ];
 
-    const { compareRankings } = getLeaderboardAnalyzer(4);
+    const { compareRankings } = getLeaderboardAnalyzer({top: 4});
     const res = compareRankings(old, nu);
 
     for (const ex of expected) {
@@ -107,31 +107,31 @@ describe("getChangeDetails", () => {
   })
 });
 
-describe("describeChange", () => {
+describe("describeChanges", () => {
   it("describes a new entry", () => {
-    const { describeChange } = getLeaderboardAnalyzer(4);
+    const { describeChanges } = getLeaderboardAnalyzer({top: 4});
 
     const tests = [
       { // Rise
-        details: {name: "Vince_HD", oldPos: 10, oldGame: 20.654, newPos: 1, newGame: 15.654},
-        expected: 'Vince_HD rose from position 10 to position 1 with a time of 15.654',
+        details: [{name: "Vince_HD", oldPos: 10, oldGame: 20.654, newPos: 1, newGame: 15.654}],
+        expected: '  10 ⬆   1 Vince_HD (15.654)',
       },
       { // Fall
-        details: {name: "Vince_HD", oldPos: 2, oldGame: 20.654, newPos: 3, newGame: 20.654},
-        expected: 'Vince_HD fell from position 2 to position 3',
+        details: [{name: "Vince_HD", oldPos: 2, oldGame: 20.654, newPos: 3, newGame: 20.654}],
+        expected: '   2 ⬇   3 Vince_HD (20.654)',
       },
       { // Exit leaderboard
-        details: {name: "Vince_HD", oldPos: 2, oldGame: 20.654},
-        expected: 'Vince_HD fell out of the top 4',
+        details: [{name: "Vince_HD", oldPos: 2, oldGame: 20.654}],
+        expected: '   2 ⬇     Vince_HD',
       },
       { // Enter leaderboard
-        details: {name: "Vince_HD", newPos: 2, newGame: 15.654, newId: 16008204},
-        expected: 'Vince_HD entered the top 4 at position 2 with a time of 15.654',
+        details: [{name: "Vince_HD", newPos: 2, newGame: 15.654, newId: 16008204}],
+        expected: '     ⬆   2 Vince_HD (15.654)',
       },
     ]
 
     for (const {details, expected} of tests) {
-      assertEquals(describeChange(details), expected);
+      assertEquals(describeChanges(details), expected);
     }
   });
 });

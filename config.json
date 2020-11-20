@@ -1,0 +1,17 @@
+{
+  "discordWebhook": "",
+  "reports": [
+    {
+      "name": "Sprint 40L",
+      "game": 1,
+      "mode": 1,
+      "top": 500
+    },
+    {
+      "name": "Sprint 1000L",
+      "game": 1,
+      "mode": 4,
+      "top": 100
+    }
+  ]
+}

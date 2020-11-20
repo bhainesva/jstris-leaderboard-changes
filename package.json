@@ -5,7 +5,8 @@
   "type": "module",
   "license": "MIT",
   "dependencies": {
-    "bent": "^7.3.12"
+    "bent": "^7.3.12",
+    "minimist": "^1.2.5"
   },
   "devDependencies": {
     "highground": "^1.0.9"
