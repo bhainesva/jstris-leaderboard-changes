@@ -114,19 +114,19 @@ describe("describeChanges", () => {
     const tests = [
       { // Rise
         details: [{name: "Vince_HD", oldPos: 10, oldGame: 20.654, newPos: 1, newGame: 15.654}],
-        expected: '  10 ⬆   1 Vince_HD (15.654)',
+        expected: '  10 ▲   1 Vince_HD [15.654]',
       },
       { // Fall
         details: [{name: "Vince_HD", oldPos: 2, oldGame: 20.654, newPos: 3, newGame: 20.654}],
-        expected: '   2 ⬇   3 Vince_HD (20.654)',
+        expected: '   2 ▼   3 Vince_HD [20.654]',
       },
       { // Exit leaderboard
         details: [{name: "Vince_HD", oldPos: 2, oldGame: 20.654}],
-        expected: '   2 ⬇     Vince_HD',
+        expected: '   2 ▼     Vince_HD',
       },
       { // Enter leaderboard
         details: [{name: "Vince_HD", newPos: 2, newGame: 15.654, newId: 16008204}],
-        expected: '     ⬆   2 Vince_HD (15.654)',
+        expected: '     ▲   2 Vince_HD [15.654]',
       },
     ]
 

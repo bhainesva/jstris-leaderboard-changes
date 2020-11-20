@@ -14,7 +14,7 @@ Each time the script is run it will overwrite the saved snapshots of the relevan
 The script takes a config file as input. By default this is `config.json`, or a custom file can be specified with a `-config` or `-c` option.
 
 The config file has two top level properties
-1. discordWebhook - optional discord webhook url, if provided, change summaries will be postted to the url
+1. discordWebhook - optional discord webhook url, if provided, change summaries will be posted to the url
 2. reports - array of report configs. A report config has 4 properties.
     1. name - used for labeling output
     2. game - jstris game type (see [jstris api](https://erickmack.github.io/JstrisAPIdocs/#/?id=http-request))
@@ -43,14 +43,14 @@ and this data returned from the jstris api
 
 the script will output
 ```
-   4 ⬆   2 Diane            (7)
-     ⬆   1 Frauelein Maria  (6)
-   2 ⬇     Bob
+   4 ▲   2 Diane            (7)
+     ▲   1 Frauelein Maria  (6)
+   2 ▼     Bob
 ```
 
 output running now (11/19/2020) against a snapshot from yesterday is
 ```
- 221 ⬆ 161 kneesocks  (24.826)
-     ⬆ 446 Frostfire  (28.366)
- 500 ⬇     NameNoName
+ 221 ▲ 161 kneesocks  (24.826)
+     ▲ 446 Frostfire  (28.366)
+ 500 ▼     NameNoName
 ```
