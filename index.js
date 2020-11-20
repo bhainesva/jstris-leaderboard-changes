@@ -32,7 +32,7 @@ const getReportRunner = config => reportConfig => {
 
   if (config.discordWebhook) {
     const { sendMessage } = getDiscordClient(config.discordWebhook);
-    summarizeResult.then(summary => sendMessage(reportConfig.name + ' Leaderboard Changes\n```' + summary + '```'));
+    summarizeResult.then(summary => sendMessage('**'+reportConfig.name + '** Changes\n```css\n' + summary + '```'));
   } else {
     summarizeResult.then(res => console.log(`${reportConfig.name} Leaderboard Changes\n${res}`));
   }
