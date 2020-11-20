@@ -67,8 +67,8 @@ const describeChanges = changes => {
 
 const describeChange = (details, pad = 0) => {
   const type = getChangeType(details);
-  const changeDescriptor = (type === changeType.FALL || type === changeType.EXIT) ? '⬇' : '⬆';
-  const extension = (type !== changeType.EXIT) ? ` (${details.newGame})` : ''
+  const changeDescriptor = (type === changeType.FALL || type === changeType.EXIT) ? '▼' : '▲';
+  const extension = (type !== changeType.EXIT) ? ` [${details.newGame}]` : ''
 
   return `${String(details.oldPos || '').padStart(4, ' ')} ${changeDescriptor}${String(details.newPos || '').padStart(4, ' ')} ${details.name.padEnd(pad, ' ')}${extension}`;
 }
