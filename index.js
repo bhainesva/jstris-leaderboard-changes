@@ -2,20 +2,22 @@ import { promises as fs } from 'fs';
 import { changeType, getChangeType, getLeaderboardAnalyzer } from './src/leaderboardAnalyzer.js';
 import { getFileName, getUrl } from './src/config.js';
 import { getDiscordClient } from './src/discord.js';
+import { getMarkdownFormatter, getTextFormatter } from './src/formatters.js';
+import { fail, handleSettledPromise, map, filter } from './src/util.js';
 import parseArgs from 'minimist';
 
 import bent from 'bent';
 const getJSON = bent('json');
 
-const fail = err => {
-  console.log(err)
-  process.exitCode = 1;
-}
+const getReportProcessor = config => reportConfig => {
+  const sendReport = config.discordWebhook ?
+    getDiscordClient(config.discordWebhook).sendMessage :
+    msg => Promise.resolve(console.log(msg));
 
-const filter = f => iter => iter.filter(f);
+  const format = config.discordWebhook ?
+    getMarkdownFormatter(reportConfig.name) :
+    getTextFormatter(reportConfig.name)
 
-const getReportRunner = config => reportConfig => {
-  const { compareRankings, describeChanges } = getLeaderboardAnalyzer(reportConfig);
   const fileName = getFileName(reportConfig);
 
   const loadingResult = Promise.all([
@@ -23,24 +25,23 @@ const getReportRunner = config => reportConfig => {
     getJSON(getUrl(reportConfig))]
   );
 
-  // You can only drop ranks when other people gain ranks, reporting them is a lot
-  // of noise so we filter them out
-  const compareResult = loadingResult.then(res => compareRankings(...res))
-    .then(filter(details => getChangeType(details) !== changeType.FALL))
+  const prepareReporter = compareResults => () => {
+    if (config.skipEmpty && !compareResults.length) return;
 
-  const summarizeResult = compareResult.then(describeChanges);
-
-  if (config.discordWebhook) {
-    const { sendMessage } = getDiscordClient(config.discordWebhook);
-    summarizeResult.then(summary => sendMessage('**'+reportConfig.name + '** Changes\n```css\n' + summary + '```'));
-  } else {
-    summarizeResult.then(res => console.log(`${reportConfig.name} Leaderboard Changes\n${res}`));
+    const formattedResults = format(compareResults);
+    return sendReport(formattedResults)
+              .then(() => loadingResult.then(res => fs.writeFile(fileName, JSON.stringify(res[1]))))
+              .catch(fail);
   }
 
-  // If everything succeeded, replace old data file with new one
-  Promise.all([loadingResult, summarizeResult])
-    .then(res => fs.writeFile(fileName, JSON.stringify(res[0][1])))
-    .catch(fail);
+  // You can only drop ranks when other people gain ranks, reporting them is a lot
+  // of noise so we filter them out
+  const { compareRankings } = getLeaderboardAnalyzer(reportConfig);
+  const compareResult = loadingResult.then(res => compareRankings(...res))
+    .then(filter(details => getChangeType(details) !== changeType.FALL))
+    .then(prepareReporter);
+
+  return compareResult.catch(err => Promise.reject(`${reportConfig.name} failed: ${err}`));
 }
 
 const main = async () => {
@@ -52,8 +53,12 @@ const main = async () => {
     .catch(fail);
   if (!config) return;
 
-  const run = getReportRunner(config);
-  config.reports.forEach(run);
+  const runProcessor = getReportProcessor(config);
+
+  const reporters = await Promise.allSettled(config.reports.map(runProcessor));
+  const settledReporterHandler = handleSettledPromise(p => p.value().catch(fail), p => fail(p.reason));
+  reporters.reduce((promise, cur) => promise.then(() => settledReporterHandler(cur)), Promise.resolve())
+    .catch(fail);
 }
 
 main();

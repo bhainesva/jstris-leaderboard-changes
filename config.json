@@ -1,5 +1,6 @@
 {
   "discordWebhook": "",
+  "skipEmpty": true,
   "reports": [
     {
       "name": "Sprint 40L",
