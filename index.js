@@ -10,39 +10,41 @@ import bent from 'bent';
 const getJSON = bent('json');
 const dataFolder = 'data'
 
-const getReportProcessor = config => reportConfig => {
+const getReportProcessor = config => {
   const sendReport = config.discordWebhook ?
     getDiscordClient(config.discordWebhook).sendMessage :
     msg => Promise.resolve(console.log(msg));
 
-  const format = config.discordWebhook ?
-    getMarkdownFormatter(reportConfig) :
-    getTextFormatter(reportConfig)
+  return reportConfig => {
+    const format = config.discordWebhook ?
+      getMarkdownFormatter(reportConfig) :
+      getTextFormatter(reportConfig)
 
-  const fileName = getFileName(reportConfig);
+    const fileName = getFileName(reportConfig);
 
-  const loadingResult = Promise.all([
-    fs.readFile(`${dataFolder}/${fileName}`).then(JSON.parse),
-    getJSON(getUrl(reportConfig))]
-  );
+    const loadingResult = Promise.all([
+      fs.readFile(`${dataFolder}/${fileName}`).then(JSON.parse),
+      getJSON(getUrl(reportConfig))]
+    );
 
-  const prepareReporter = compareResults => () => {
-    if (config.skipEmpty && !compareResults.length) return;
+    const prepareReporter = compareResults => () => {
+      if (config.skipEmpty && !compareResults.length) return;
 
-    const formattedResults = format(compareResults);
-    return sendReport(formattedResults)
-              .then(() => loadingResult.then(res => fs.writeFile(`${dataFolder}/${fileName}`, JSON.stringify(res[1]))))
-              .catch(fail);
+      const formattedResults = format(compareResults);
+      return sendReport(formattedResults)
+                .then(() => loadingResult.then(res => fs.writeFile(`${dataFolder}/${fileName}`, JSON.stringify(res[1]))))
+                .catch(fail);
+    }
+
+    // You can only drop ranks when other people gain ranks, reporting them is a lot
+    // of noise so we filter them out
+    const { compareRankings } = getLeaderboardAnalyzer(reportConfig);
+    const compareResult = loadingResult.then(res => compareRankings(...res))
+      .then(filter(details => getChangeType(details) !== changeType.FALL))
+      .then(prepareReporter);
+
+    return compareResult.catch(err => Promise.reject(`${reportConfig.name} failed: ${err}`));
   }
-
-  // You can only drop ranks when other people gain ranks, reporting them is a lot
-  // of noise so we filter them out
-  const { compareRankings } = getLeaderboardAnalyzer(reportConfig);
-  const compareResult = loadingResult.then(res => compareRankings(...res))
-    .then(filter(details => getChangeType(details) !== changeType.FALL))
-    .then(prepareReporter);
-
-  return compareResult.catch(err => Promise.reject(`${reportConfig.name} failed: ${err}`));
 }
 
 const main = async () => {
