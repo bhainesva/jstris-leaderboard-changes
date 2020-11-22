@@ -1,5 +1,10 @@
 import { getChangeType, changeType, sortDetails } from './changeDetails.js';
 
+const formatTime = secs => {
+  const isoStr = new Date(secs * 1000).toISOString();
+  return isoStr.substr(11, isoStr.length - 12).replace(/^[0:]+/, "").replace(/\.?0+$/, "");
+}
+
 const formatMessageBody = changes => {
   const maxNameLength = Math.max(...changes.map(details => details.name.length));
   return sortDetails(changes)
@@ -15,17 +20,32 @@ const formatDetails = (details, pad = 0) => {
   return `${String(details.oldPos || '').padStart(4, ' ')} ${changeDescriptor}${String(details.newPos || '').padStart(4, ' ')} ${details.name.padEnd(pad, ' ')}${extension}`;
 }
 
-const getMarkdownFormatter = title => changes => {
-  const summary = formatMessageBody(changes);
-  return '**'+ title + '** Changes\n```css\n' + summary + '```'
+const getMarkdownFormatter = config => changes => {
+  const { name, formatTime: fTime  = true } = config;
+  const preparedChanges = fTime ?
+    changes.map(details => ({
+      ...details,
+      newGame: details.newGame && formatTime(details.newGame)
+    })) :
+    changes;
+  const summary = formatMessageBody(preparedChanges);
+  return '**'+ name + '** Changes\n```css\n' + summary + '```'
 }
 
-const getTextFormatter = title => changes => {
-  const summary = formatMessageBody(changes);
-  return `${title} Changes\n${summary}`;
+const getTextFormatter = config => changes => {
+  const { name, formatTime: fTime = true } = config;
+  const preparedChanges = fTime ?
+    changes.map(details => ({
+      ...details,
+      newGame: details.newGame && formatTime(details.newGame)
+    })) :
+    changes;
+  const summary = formatMessageBody(preparedChanges);
+  return `${name} Changes\n${summary}`;
 }
 
 export {
+  formatTime,
   getMarkdownFormatter,
   getTextFormatter,
 }

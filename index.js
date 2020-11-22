@@ -8,6 +8,7 @@ import parseArgs from 'minimist';
 
 import bent from 'bent';
 const getJSON = bent('json');
+const dataFolder = 'data'
 
 const getReportProcessor = config => reportConfig => {
   const sendReport = config.discordWebhook ?
@@ -15,13 +16,13 @@ const getReportProcessor = config => reportConfig => {
     msg => Promise.resolve(console.log(msg));
 
   const format = config.discordWebhook ?
-    getMarkdownFormatter(reportConfig.name) :
-    getTextFormatter(reportConfig.name)
+    getMarkdownFormatter(reportConfig) :
+    getTextFormatter(reportConfig)
 
   const fileName = getFileName(reportConfig);
 
   const loadingResult = Promise.all([
-    fs.readFile(fileName).then(JSON.parse),
+    fs.readFile(`${dataFolder}/${fileName}`).then(JSON.parse),
     getJSON(getUrl(reportConfig))]
   );
 
@@ -30,7 +31,7 @@ const getReportProcessor = config => reportConfig => {
 
     const formattedResults = format(compareResults);
     return sendReport(formattedResults)
-              .then(() => loadingResult.then(res => fs.writeFile(fileName, JSON.stringify(res[1]))))
+              .then(() => loadingResult.then(res => fs.writeFile(`${dataFolder}/${fileName}`, JSON.stringify(res[1]))))
               .catch(fail);
   }
 

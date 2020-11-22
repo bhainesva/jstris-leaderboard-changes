@@ -1,6 +1,6 @@
 const getFileName = report => {
   const { game, mode=1 } = report;
-  return `data/${game}-${mode}.json`;
+  return `${game}-${mode}.json`;
 }
 
 const getUrl = report => {

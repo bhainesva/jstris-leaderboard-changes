@@ -1,5 +1,5 @@
 import hg from 'highground';
-import { handleSettledPromise, filter, map, fail } from '../src/util.js'
+import { handleSettledPromise, filter, map } from '../src/util.js'
 import { assertEquals } from './testUtil.js';
 
 const {describe, it} = hg;

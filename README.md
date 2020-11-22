@@ -21,6 +21,7 @@ The config file has two top level properties
     2. game - jstris game type (see [jstris api](https://erickmack.github.io/JstrisAPIdocs/#/?id=http-request))
     3. mode - jstris game mode (see [jstris api](https://erickmack.github.io/JstrisAPIdocs/#/?id=http-request)), default 1
     4. top - what portion of the leaderboard should be monitored, between 0 and 500, default 500
+    4. formatTime - bool, format the game score as a time, defaults true
 
 Can run the tests with `node index.spec.js`
 
