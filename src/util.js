@@ -12,9 +12,23 @@ const fail = err => {
   process.exitCode = 1;
 }
 
+const chunkLines = (size, lines) => {
+  const chunks = lines.reduce((acc, cur) => {
+    if (acc.length && (acc[acc.length-1].length + cur.length + 1) <= size) {
+      acc[acc.length-1] = [acc[acc.length-1], cur].join('\n')
+    } else {
+      acc.push(cur)
+    }
+    return acc;
+  }, []);
+
+  return chunks
+}
+
 export {
   handleSettledPromise,
   filter,
   map,
   fail,
+  chunkLines,
 }

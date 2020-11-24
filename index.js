@@ -2,7 +2,7 @@ import { promises as fs } from 'fs';
 import { changeType, getChangeType, getLeaderboardAnalyzer } from './src/leaderboardAnalyzer.js';
 import { getFileName, getUrl } from './src/config.js';
 import { getDiscordClient } from './src/discord.js';
-import { getMarkdownFormatter, getTextFormatter } from './src/formatters.js';
+import { getDiscordFormatter, getTextFormatter } from './src/formatters.js';
 import { fail, handleSettledPromise, map, filter } from './src/util.js';
 import parseArgs from 'minimist';
 
@@ -17,7 +17,7 @@ const getReportProcessor = config => {
 
   return reportConfig => {
     const format = config.discordWebhook ?
-      getMarkdownFormatter(reportConfig) :
+      getDiscordFormatter(reportConfig) :
       getTextFormatter(reportConfig)
 
     const fileName = getFileName(reportConfig);
@@ -31,9 +31,9 @@ const getReportProcessor = config => {
       if (config.skipEmpty && !compareResults.length) return;
 
       const formattedResults = format(compareResults);
-      return sendReport(formattedResults)
-                .then(() => loadingResult.then(res => fs.writeFile(`${dataFolder}/${fileName}`, JSON.stringify(res[1]))))
-                .catch(fail);
+      return Promise.all(formattedResults.map(sendReport))
+        .then(() => loadingResult.then(res => fs.writeFile(`${dataFolder}/${fileName}`, JSON.stringify(res[1]))))
+        .catch(fail);
     }
 
     // You can only drop ranks when other people gain ranks, reporting them is a lot

@@ -1,4 +1,5 @@
 import { getChangeType, changeType, sortDetails } from './changeDetails.js';
+import { chunkLines } from './util.js';
 
 const formatTime = secs => {
   const isoStr = new Date(secs * 1000).toISOString();
@@ -20,7 +21,7 @@ const formatDetails = (details, pad = 0) => {
   return `${String(details.oldPos || '').padStart(4, ' ')} ${changeDescriptor}${String(details.newPos || '').padStart(4, ' ')} ${details.name.padEnd(pad, ' ')}${extension}`;
 }
 
-const getMarkdownFormatter = config => changes => {
+const getDiscordFormatter = config => changes => {
   const { name, formatTime: fTime  = true } = config;
   const preparedChanges = fTime ?
     changes.map(details => ({
@@ -29,7 +30,9 @@ const getMarkdownFormatter = config => changes => {
     })) :
     changes;
   const summary = formatMessageBody(preparedChanges);
-  return '**'+ name + '** Changes\n```css\n' + summary + '```'
+  const summaryChunks = chunkLines(1900, summary.split('\n'));
+  const sch = summaryChunks.map((chunk, i) => `${i === 0 ? `**${name}** Changes\n`:''}` + '```css\n' + chunk + '```');
+  return sch;
 }
 
 const getTextFormatter = config => changes => {
@@ -41,11 +44,11 @@ const getTextFormatter = config => changes => {
     })) :
     changes;
   const summary = formatMessageBody(preparedChanges);
-  return `${name} Changes\n${summary}`;
+  return [`${name} Changes\n${summary}`];
 }
 
 export {
   formatTime,
-  getMarkdownFormatter,
+  getDiscordFormatter,
   getTextFormatter,
 }

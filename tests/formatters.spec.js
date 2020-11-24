@@ -1,10 +1,10 @@
 import hg from 'highground';
-import { formatTime, getMarkdownFormatter, getTextFormatter } from '../src/formatters.js'
+import { formatTime, getDiscordFormatter, getTextFormatter } from '../src/formatters.js'
 import { assertEquals } from './testUtil.js';
 
 const {describe, it} = hg;
 
-describe('text formatters', () => {
+describe('discord formatter', () => {
   it('gives expected results', () => {
     const changes = [
       {name: 'A', oldPos: 1, newPos: 10, newGame: 12.14},
@@ -13,13 +13,47 @@ describe('text formatters', () => {
       {name: 'D', oldPos: 1},
     ];
     const expectedOutput = '**Test Report** Changes\n```css\n  10 ▲   1 Bee [1:06]\n     ▲  10 C   [1]\n   1 ▼  10 A   [12.14]\n   1 ▼     D  ```';
-    const format = getMarkdownFormatter({name: 'Test Report', formatTime: true})
+    const format = getDiscordFormatter({name: 'Test Report', formatTime: true})
 
-    assertEquals(format(changes), expectedOutput);
+    assertEquals(format(changes)[0], expectedOutput);
+  });
+
+  it('splits long messages', () => {
+    const changes = [
+      {name: 'Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', oldPos: 1, newPos: 10, newGame: 12.14},
+      {name: 'Bbbbb', oldPos: 10, newPos: 1, newGame: 66},
+      {name: 'Ccccc', newPos: 10, newGame: 1},
+      {name: 'Ddddd', oldPos: 1},
+      {name: 'Eeeee', oldPos: 1, newPos: 10, newGame: 12.14},
+      {name: 'Fffff', oldPos: 1, newPos: 10, newGame: 12.14},
+      {name: 'Ggggg', oldPos: 10, newPos: 1, newGame: 66},
+      {name: 'Hhhhh', newPos: 10, newGame: 1},
+      {name: 'Iiiii', oldPos: 1},
+      {name: 'Jjjjj', oldPos: 10, newPos: 1, newGame: 66},
+      {name: 'Kkkkk', newPos: 10, newGame: 1},
+      {name: 'Lllll', oldPos: 1},
+      {name: 'Mmmmm', oldPos: 1, newPos: 10, newGame: 12.14},
+      {name: 'Nnnnn', oldPos: 10, newPos: 1, newGame: 66},
+      {name: 'Ooooo', newPos: 10, newGame: 1},
+      {name: 'Ppppp', oldPos: 1},
+      {name: 'Qqqqq', oldPos: 1, newPos: 10, newGame: 12.14},
+      {name: 'Rrrrr', oldPos: 10, newPos: 1, newGame: 66},
+      {name: 'Sssss', newPos: 10, newGame: 1},
+      {name: 'Ttttt', oldPos: 1},
+      {name: 'Uuuuu', oldPos: 1, newPos: 10, newGame: 12.14},
+      {name: 'Vvvvv', oldPos: 10, newPos: 1, newGame: 66},
+      {name: 'Wwwww', newPos: 10, newGame: 1},
+      {name: 'Xxxxx', oldPos: 1},
+      {name: 'Yyyyy', oldPos: 1},
+      {name: 'Zzzzz', oldPos: 1, newPos: 10, newGame: 12.14},
+    ];
+    const format = getDiscordFormatter({name: 'Test Report'});
+
+    assertEquals(format(changes).length > 1, true);
   });
 });
 
-describe('markdown formatter', () => {
+describe('text formatter', () => {
   it('gives expected results', () => {
     const changes = [
       {name: 'A', oldPos: 1, newPos: 10, newGame: 1},
@@ -28,9 +62,9 @@ describe('markdown formatter', () => {
       {name: 'D', oldPos: 1},
     ];
     const expectedOutput = 'Test Report Changes\n  10 ▲   1 Bee [66]\n     ▲  10 C   [1]\n   1 ▼  10 A   [1]\n   1 ▼     D  ';
-    const format = getTextFormatter({name: 'Test Report'})
+    const format = getTextFormatter({name: 'Test Report', formatTime: false})
 
-    assertEquals(format(changes), expectedOutput);
+    assertEquals(format(changes)[0], expectedOutput);
   });
 });
 

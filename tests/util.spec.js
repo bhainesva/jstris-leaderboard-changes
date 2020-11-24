@@ -1,5 +1,5 @@
 import hg from 'highground';
-import { handleSettledPromise, filter, map } from '../src/util.js'
+import { handleSettledPromise, filter, map, chunkLines } from '../src/util.js'
 import { assertEquals } from './testUtil.js';
 
 const {describe, it} = hg;
@@ -36,5 +36,19 @@ describe('handleSettledPromise', () => {
     const expectedOutput = [false, true];
     promises.then(map(handleSettledPromise(p => p.value, p => p.reason)))
       .then(actualOutput => assertEquals(JSON.stringify(actualOutput), JSON.stringify(expectedOutput)))
+  });
+});
+
+describe('chunkLines', () => {
+  it('gives expected results', () => {
+    const tests = [
+      {size: 10, lines: ["this", "is", "a", "message", "with", "lines"], out: ["this\nis\na","message", "with\nlines"]},
+      {size: 13, lines: ["this", "is", "a", "man"], out: ["this\nis\na\nman"]},
+      {size: 12, lines: ["this", "is", "a", "man"], out: ["this\nis\na", "man"]},
+    ]
+
+    for (const test of tests) {
+      assertEquals(JSON.stringify(chunkLines(test.size, test.lines)), JSON.stringify(test.out));
+    }
   });
 });
