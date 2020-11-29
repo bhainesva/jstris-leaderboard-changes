@@ -19,9 +19,11 @@ const getChangeDetails = (oldPlacing, newPlacing) => {
     oldPos: old.pos,
     oldGame: old.game,
     oldId: old.id,
+    oldTs: old.ts,
     newPos: nu.pos,
     newGame: nu.game,
     newId: nu.id,
+    newTs: nu.ts,
   }
 }
 

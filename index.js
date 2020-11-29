@@ -41,6 +41,9 @@ const getReportProcessor = config => {
     const { compareRankings } = getLeaderboardAnalyzer(reportConfig);
     const compareResult = loadingResult.then(res => compareRankings(...res))
       .then(filter(details => getChangeType(details) !== changeType.FALL))
+      // If a ranked account goes private or is deleted it can cause ranks to increase without times changing
+      // These aren't informative, so filter them out as well
+      .then(filter(details => !((getChangeType(details) === changeType.RISE || getChangeType(details) === changeType.ENTER) && details.oldTs === details.newTs)))
       .then(prepareReporter);
 
     return compareResult.catch(err => Promise.reject(`${reportConfig.name} failed: ${err}`));

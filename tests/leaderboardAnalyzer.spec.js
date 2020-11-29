@@ -23,10 +23,10 @@ describe('compareRankings', () => {
         a.newPos === b.newPos && a.newGame === b.newGame && a.newId === b.newId;
     }
     const expected = [
-      {name: 'A', oldPos: 1, oldGame: 10, oldId: 1, newPos: 4, newGame: 10, newId: 1},
-      {name: 'B', oldPos: 2, oldGame: 11, oldId: 2},
-      {name: 'D', oldPos: 4, oldGame: 13, oldId: 4, newPos: 2, newGame: 7, newId: 12},
-      {name: 'F', newPos: 1, newGame: 6, newId: 11},
+      {name: 'A', oldPos: 1, oldGame: 10, oldId: 1, newPos: 4, newGame: 10, newId: 1, oldTs: '2018-05-27 10:25:10', newTs: '2018-05-27 10:25:10'},
+      {name: 'B', oldPos: 2, oldGame: 11, oldId: 2, oldTs: '2018-05-27 10:25:10', newTs: '2018-05-27 10:25:10'},
+      {name: 'D', oldPos: 4, oldGame: 13, oldId: 4, newPos: 2, newGame: 7, newId: 12, oldTs: '2018-05-27 10:25:10', newTs: '2018-05-27 10:25:10'},
+      {name: 'F', newPos: 1, newGame: 6, newId: 11, oldTs: '2018-05-27 10:25:10', newTs: '2018-05-27 10:25:10'},
     ];
 
     const { compareRankings } = getLeaderboardAnalyzer({top: 4});
@@ -94,9 +94,11 @@ describe('getChangeDetails', () => {
       oldPos: 10,
       oldGame: 20.654,
       oldId: 5239239,
+      oldTs: '2018-05-27 10:25:10',
       newPos: 1,
       newGame: 15.654,
       newId: 16008204,
+      newTs: '2020-05-27 10:25:10',
     }
     assertEquals(JSON.stringify(getChangeDetails(old, nu)), JSON.stringify(expected));
   })
