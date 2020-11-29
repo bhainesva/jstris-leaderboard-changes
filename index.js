@@ -28,7 +28,7 @@ const getReportProcessor = config => {
     );
 
     const prepareReporter = compareResults => () => {
-      if (config.skipEmpty && !compareResults.length) return;
+      if (config.skipEmpty && !compareResults.length) return Promise.resolve();
 
       const formattedResults = format(compareResults);
       return Promise.all(formattedResults.map(sendReport))
